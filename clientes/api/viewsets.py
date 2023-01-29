@@ -29,12 +29,12 @@ class ClientViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         cep = request.data.get('cep')
         if not cep:
-            return Response({"CEP não informado"}, status=Response.status_code)
+            return Response({"CEP não informado"}, status=400)
         try:
             response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            return Response(serializer.data,  {"" : str(e)}, status=Response.status_code)
+            return Response(serializer.data,  {"" : str(e)}, status=400)
         
         address_data = response.json()
         
@@ -49,18 +49,18 @@ class ClientViewSet(viewsets.ModelViewSet):
         
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=Response.status_code, headers=headers)
+        return Response(serializer.data, status=201, headers=headers)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         cep = request.data.get('cep')
         if not cep:
-            return Response({"CEP não informado"}, status=Response.status_code)
+            return Response({"CEP não informado"}, status=400)
         try:
             response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            return Response(instance, {"" : str(e)}, status=Response.status_code)
+            return Response(instance, {"" : str(e)}, status=400)
         address_data = response.json()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
@@ -70,10 +70,10 @@ class ClientViewSet(viewsets.ModelViewSet):
                 'logradouro': address_data['logradouro']
             })
         if not serializer.is_valid():
-            return Response(serializer.data,  {"" : str(e)}, status=Response.status_code)
+            return Response(serializer.data,  {"" : str(e)}, status=400)
 
         self.perform_update(serializer)
-        return Response(serializer.data, status=Response.status_code)
+        return Response(serializer.data, status=200)
         
     def perform_update(self, serializer):
             serializer.save()
@@ -82,8 +82,8 @@ class ClientViewSet(viewsets.ModelViewSet):
         try:
             client = self.get_object()
             client.delete()
-            return Response({"Cliente removido com sucesso"})
+            return Response({"Cliente removido com sucesso"}, status=200)
         except Exception as e:
-            return Response(request.data,  {"" : str(e)}, status=Response.status_code)
+            return Response(request.data,  {"" : str(e)}, status=400)
 
 
