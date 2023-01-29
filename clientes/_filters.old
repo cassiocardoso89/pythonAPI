@@ -1,0 +1,9 @@
+# from django_filters import rest_framework as filters
+# from clientes.models import Clientes
+
+# class ClientFilter(filters.FilterSet):
+#     cpf = filters.CharFilter(lookup_expr='iexact')
+
+#     class Meta:
+#         model = Clientes
+#         fields = ['cpf','cep','nome']
