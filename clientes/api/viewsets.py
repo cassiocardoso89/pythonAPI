@@ -14,12 +14,12 @@ class ClientViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         cep = request.data.get('cep')
         if not cep:
-            return Response({"message": "CEP não informado"}, status=Response.status_code)
+            return Response({"CEP não informado"}, status=Response.status_code)
         try:
             response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
             response.raise_for_status()
-        except requests.exceptions.RequestException as error:
-            return Response({"menssagem": str(error)}, status=Response.status_code)
+        except requests.exceptions.RequestException as e:
+            return Response(serializer.data,  {"" : str(e)}, status=Response.status_code)
         
         address_data = response.json()
         
@@ -55,19 +55,19 @@ class ClientViewSet(viewsets.ModelViewSet):
         try:
             client = self.get_object()
             client.delete()
-            return Response({"menssagem": "Cliente removido com sucesso"})
+            return Response({"Cliente removido com sucesso"})
         except Exception as e:
-            return Response({"erro": str(e)}, status=Response.status_code)
+            return Response(request.data,  {"" : str(e)}, status=Response.status_code)
 
     def update_queryset(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if not serializer.is_valid():
-            return Response({"erro": serializer.errors}, status=Response.status_code)
+            return Response(serializer.data,  {"" : str(e)}, status=Response.status_code)
         try:
             self.perform_update(serializer)
         except Exception as e:
-            return Response({"error": str(e)}, status=Response.status_code)
+            return Response(serializer.data,  {"" : str(e)}, status=Response.status_code)
         return Response(serializer.data, status=Response.status_code)
 
     def perform_update(self, serializer):
