@@ -19,3 +19,4 @@ class Clientes(models.Model):
     cep =  models.IntegerField()
     cidade =  models.CharField(max_length=255, editable=False)
     estado =  models.CharField(max_length=255, editable=False)
+    logradouro =  models.CharField(max_length=255, editable=False)
